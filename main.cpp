@@ -55,11 +55,68 @@
 
 #include <QtQml/QQmlApplicationEngine>
 
+#include <QScreen>
+
+#include <QList>
+
+#include <QQmlContext>
+
+class ScreensProvider : public QObject
+{
+    Q_OBJECT
+    Q_PROPERTY(QList<QScreen *> screens READ screens NOTIFY screensChanged)
+
+public:
+    explicit ScreensProvider(QObject *parent = nullptr)
+        : QObject(parent)
+    {
+        setScreens();
+    }
+
+    QList<QScreen *> screens() const {
+        return m_screens;
+    }
+
+public slots:
+    void setScreens() {
+        m_screens.clear();
+
+        const QList<QScreen *> screens {qApp->screens()};
+        for (auto *screen : screens)
+        {
+            if (screen->name() == "qt_Headless") {
+                continue;
+            }
+            m_screens.push_back(screen);
+        }
+        qDebug() << Q_FUNC_INFO << m_screens;
+        emit screensChanged();
+    }
+
+signals:
+    void screensChanged();
+
+private:
+    QList<QScreen *> m_screens;
+};
+
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
 
-    QQmlApplicationEngine appEngine(QUrl("qrc:///qml/main.qml"));
+    QQmlApplicationEngine appEngine;
+
+    // ScreensProvider screensProvider;
+
+    // appEngine.rootContext()->setContextProperty("screensProvider", &screensProvider);
+
+    // QObject::connect(&app, &QGuiApplication::screenAdded, &screensProvider, &ScreensProvider::setScreens);
+
+    // QObject::connect(&app, &QGuiApplication::screenRemoved, &screensProvider, &ScreensProvider::setScreens);
+
+    appEngine.load(QUrl("qrc:///qml/main.qml"));
 
     return app.exec();
 }
+
+#include "main.moc"

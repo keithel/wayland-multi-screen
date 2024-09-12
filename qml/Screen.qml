@@ -100,5 +100,14 @@ WaylandOutput {
             sequence: "Ctrl+Alt+Backspace"
             onActivated: Qt.quit()
         }
+
+        onScreenChanged: {
+            console.log(win, "screen changed", !!win.screen ? win.screen.name : "no screen")
+        }
+
+        Component.onCompleted: console.log(win, "on screen", screen.text, "created. visible:",win.visible)
+        Component.onDestruction: console.log(win, "on screen", screen.text, "destroyed")
     }
+    Component.onCompleted: console.log(screen, screen.text, "created.")
+    Component.onDestruction: console.log(screen, screen.text, "destroyed")
 }

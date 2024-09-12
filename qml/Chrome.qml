@@ -57,6 +57,7 @@ Item {
     property alias shellSurface: surfaceItem.shellSurface
     property alias surfaceItem: surfaceItem
     property alias moveItem: surfaceItem.moveItem
+    property alias output: surfaceItem.output
 
     x: surfaceItem.moveItem.x - surfaceItem.output.geometry.x
     y: surfaceItem.moveItem.y - surfaceItem.output.geometry.y
@@ -65,6 +66,8 @@ Item {
         id: surfaceItem
         autoCreatePopupItems: true
         onSurfaceDestroyed: chrome.destroy();
+        Component.onCompleted: console.log(surfaceItem, "on window", surfaceItem.output.window, "created. visible:", surfaceItem.visible)
+        Component.onDestruction: console.log(surfaceItem, /*"on window", surfaceItem.output.window, */"destroyed")
     }
 
     onXChanged: updatePrimary()
@@ -81,8 +84,10 @@ Item {
         var y2 = Math.min(y + h, screenH);
         var w1 = Math.max(0, x2 - x1);
         var h1 = Math.max(0, y2 - y1);
-        if (w1 * h1 * 2 > area) {
-            surfaceItem.setPrimary();
-        }
+        // if (w1 * h1 * 2 > area) {
+        //     surfaceItem.setPrimary();
+        // }
+        surfaceItem.setPrimary()
+        console.log("updatePrimary: surfaceItem", surfaceItem, "x", x1, "y", y1, "w", w1, "h", h1)
     }
 }
